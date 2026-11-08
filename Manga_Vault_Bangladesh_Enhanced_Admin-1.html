@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Vault Bangladesh | প্রিমিয়াম বাংলা মাঙ্গা প্ল্যাটফর্ম</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        silver: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#090d16',
+                        },
+                        iceblue: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for Bengali & English -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Vue.js 3 for Reactive Dynamic State -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Hind Siliguri', sans-serif;
+            background-color: #090d16;
+            color: #e2e8f0;
+        }
+        .silver-glass {
+            background: rgba(30, 41, 59, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+        }
+        .silver-glow {
+            box-shadow: 0 0 25px -5px rgba(56, 189, 248, 0.25);
+        }
+        .text-glow {
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-iceblue-500 selection:text-white">
+
+    <div id="app" class="flex-1 flex flex-col min-h-screen">
+
+        <!-- Announcement Top Bar / Header Ad Area -->
+        <div v-if="adsEnabled.topBanner" class="bg-gradient-to-r from-silver-900 via-iceblue-950 to-silver-900 border-b border-iceblue-500/20 py-2 px-4 text-center text-xs text-silver-300 relative">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <span class="bg-iceblue-500/20 text-iceblue-300 text-[10px] font-bold px-2 py-0.5 rounded border border-iceblue-400/30">SPONSORED AD</span>
+                <p class="truncate px-2">🔥 <span class="text-iceblue-400 font-semibold">Manga Vault BD Store:</span> আসল জাপানি প্রিমিয়াম বুকমার্ক ফ্রিতে পেতে আজই ২টির বেশি পেপারব্যাক অর্ডার করুন!</p>
+                <button @click="adsEnabled.topBanner = false" class="text-silver-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+
+        <!-- MAIN HEADER / NAVBAR -->
+        <header class="sticky top-0 z-40 silver-glass border-b border-silver-700/40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    
+                    <!-- Logo -->
+                    <div class="flex items-center space-x-3 cursor-pointer" @click="currentTab = 'home'; selectedManga = null">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-iceblue-600 to-silver-400 flex items-center justify-center shadow-lg shadow-iceblue-500/20">
+                            <i class="fas fa-book-open text-silver-950 text-xl font-black"></i>
+                        </div>
+                        <div>
+                            <span class="text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-iceblue-200 to-iceblue-400">MANGA VAULT</span>
+                            <span class="block text-[10px] tracking-widest text-iceblue-400 font-bold uppercase -mt-1">BANGLADESH</span>
+                        </div>
+                    </div>
+
+                    <!-- Desktop Nav Menu -->
+                    <nav class="hidden md:flex items-center space-x-1">
+                        <button @click="currentTab = 'home'; selectedManga = null; selectedChapter = null" :class="currentTab === 'home' && !selectedManga ? 'text-iceblue-400 bg-silver-800/80 border-b-2 border-iceblue-400' : 'text-silver-300 hover:text-white hover:bg-silver-800/40'" class="px-4 py-2.5 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                            <i class="fas fa-fire text-xs"></i> হোম পেজ
+                        </button>
+                        <button @click="currentTab = 'library'; selectedManga = null; selectedChapter = null" :class="currentTab === 'library' ? 'text-iceblue-400 bg-silver-800/80 border-b-2 border-iceblue-400' : 'text-silver-300 hover:text-white hover:bg-silver-800/40'" class="px-4 py-2.5 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                            <i class="fas fa-layer-group text-xs"></i> মাঙ্গা লাইব্রেরি
+                        </button>
+                        <button @click="currentTab = 'store'; selectedManga = null; selectedChapter = null" :class="currentTab === 'store' ? 'text-iceblue-400 bg-silver-800/80 border-b-2 border-iceblue-400' : 'text-silver-300 hover:text-white hover:bg-silver-800/40'" class="px-4 py-2.5 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                            <i class="fas fa-shopping-bag text-xs"></i> মাঙ্গা স্টোর
+                            <span class="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">Buy</span>
+                        </button>
+                        <button @click="currentTab = 'bookmarks'; selectedManga = null; selectedChapter = null" :class="currentTab === 'bookmarks' ? 'text-iceblue-400 bg-silver-800/80 border-b-2 border-iceblue-400' : 'text-silver-300 hover:text-white hover:bg-silver-800/40'" class="px-4 py-2.5 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                            <i class="fas fa-bookmark text-xs"></i> বুকমার্কস ({{ bookmarks.length }})
+                        </button>
+                    </nav>
+
+                    <!-- Right Controls (Admin Toggle & Search Quick) -->
+                    <div class="flex items-center space-x-3">
+                        
+                        <!-- Secret Admin Toggle Button -->
+                        <button @click="toggleAdminView" class="relative group px-3.5 py-2 rounded-xl bg-gradient-to-r from-silver-800 to-silver-900 border border-iceblue-500/30 hover:border-iceblue-400 text-xs font-semibold text-silver-200 transition shadow-md flex items-center gap-2">
+                            <i class="fas" :class="isAdminLoggedIn ? 'fa-user-shield text-emerald-400' : 'fa-lock text-iceblue-400'"></i>
+                            <span>{{ isAdminViewActive ? 'Exit Dashboard' : (isAdminLoggedIn ? 'Admin Panel' : 'Admin Login') }}</span>
+                            <span v-if="isAdminLoggedIn" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        </button>
+
+                        <!-- Mobile Menu Button -->
+                        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 text-silver-300 hover:text-white">
+                            <i class="fas" :class="mobileMenuOpen ? 'fa-times text-xl' : 'fa-bars text-xl'"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Mobile Nav Dropdown -->
+            <div v-if="mobileMenuOpen" class="md:hidden bg-silver-900 border-b border-silver-800 px-4 py-3 space-y-2">
+                <button @click="currentTab = 'home'; selectedManga = null; mobileMenuOpen = false" class="w-full text-left px-3 py-2 rounded text-silver-200 hover:bg-silver-800 flex items-center gap-2">
+                    <i class="fas fa-fire"></i> হোম পেজ
+                </button>
+                <button @click="currentTab = 'library'; selectedManga = null; mobileMenuOpen = false" class="w-full text-left px-3 py-2 rounded text-silver-200 hover:bg-silver-800 flex items-center gap-2">
+                    <i class="fas fa-layer-group"></i> মাঙ্গা লাইব্রেরি
+                </button>
+                <button @click="currentTab = 'store'; selectedManga = null; mobileMenuOpen = false" class="w-full text-left px-3 py-2 rounded text-silver-200 hover:bg-silver-800 flex items-center gap-2">
+                    <i class="fas fa-shopping-bag"></i> মাঙ্গা স্টোর (বই ক্রয়)
+                </button>
+                <button @click="currentTab = 'bookmarks'; selectedManga = null; mobileMenuOpen = false" class="w-full text-left px-3 py-2 rounded text-silver-200 hover:bg-silver-800 flex items-center gap-2">
+                    <i class="fas fa-bookmark"></i> বুকমার্ক তালিকা
+                </button>
+            </div>
+        </header>
+
+        <!-- ADMIN PANEL VIEW (ONLY FOR ADMIN) -->
+        <main v-if="isAdminViewActive" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+            <div class="mb-6 silver-glass p-6 rounded-2xl border-l-4 border-iceblue-400 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <i class="fas fa-user-shield text-iceblue-400"></i> Admin Master Control Dashboard
+                    </h2>
+                    <p class="text-xs text-silver-400 mt-1">স্বাগতম এডমিন! এখান থেকে মাঙ্গা চ্যাপ্টার প্রকাশ, বই বিক্রির স্টোর পরিচালনা এবং বিজ্ঞাপন নিয়ন্ত্রণ করুন।</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">Active Session</span>
+                    <button @click="isAdminLoggedIn = false; isAdminViewActive = false" class="px-3 py-1 bg-red-900/40 hover:bg-red-800/60 border border-red-500/30 text-red-300 text-xs rounded-lg transition">লগআউট</button>
+                </div>
+            </div>
+
+            <!-- Admin Tabs Navigation -->
+            <div class="flex border-b border-silver-800 mb-6 overflow-x-auto">
+                <button @click="adminTab = 'overview'" :class="adminTab === 'overview' ? 'border-iceblue-400 text-iceblue-400 font-bold' : 'border-transparent text-silver-400 hover:text-silver-200'" class="py-3 px-6 border-b-2 text-sm whitespace-nowrap">
+                    <i class="fas fa-chart-line mr-1"></i> ড্যাশবোর্ড
+                </button>
+                <button @click="adminTab = 'addManga'" :class="adminTab === 'addManga' ? 'border-iceblue-400 text-iceblue-400 font-bold' : 'border-transparent text-silver-400 hover:text-silver-200'" class="py-3 px-6 border-b-2 text-sm whitespace-nowrap">
+                    <i class="fas fa-plus-circle mr-1"></i> নতুন মাঙ্গা / চ্যাপ্টার যোগ
+                </button>
+                <button @click="adminTab = 'manageStore'" :class="adminTab === 'manageStore' ? 'border-iceblue-400 text-iceblue-400 font-bold' : 'border-transparent text-silver-400 hover:text-silver-200'" class="py-3 px-6 border-b-2 text-sm whitespace-nowrap">
+                    <i class="fas fa-store mr-1"></i> স্টোর ম্যানেজার (বই যোগ)
+                </button>
+                <button @click="adminTab = 'orders'" :class="adminTab === 'orders' ? 'border-iceblue-400 text-iceblue-400 font-bold' : 'border-transparent text-silver-400 hover:text-silver-200'" class="py-3 px-6 border-b-2 text-sm whitespace-nowrap">
+                    <i class="fas fa-receipt mr-1"></i> অর্ডারসমূহ ({{ storeOrders.length }})
+                </button>
+                <button @click="adminTab = 'adsManager'" :class="adminTab === 'adsManager' ? 'border-iceblue-400 text-iceblue-400 font-bold' : 'border-transparent text-silver-400 hover:text-silver-200'" class="py-3 px-6 border-b-2 text-sm whitespace-nowrap">
+                    <i class="fas fa-ad mr-1"></i> বিজ্ঞাপন ও ইনকাম সেটিংস
+                </button>
+            </div>
+
+            <!-- Admin Overview Dashboard -->
+            <div v-if="adminTab === 'overview'" class="space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <div class="silver-glass p-6 rounded-2xl border-l-4 border-iceblue-400">
+                        <p class="text-silver-400 text-sm">মোট মাঙ্গা সিরিজ</p>
+                        <p class="text-3xl font-extrabold text-white mt-2">{{ mangaList.length }}</p>
+                    </div>
+                    <div class="silver-glass p-6 rounded-2xl border-l-4 border-blue-500">
+                        <p class="text-silver-400 text-sm">মোট আপলোড চ্যাপ্টার</p>
+                        <p class="text-3xl font-extrabold text-white mt-2">{{ totalChapters }}</p>
+                    </div>
+                    <div class="silver-glass p-6 rounded-2xl border-l-4 border-emerald-500">
+                        <p class="text-silver-400 text-sm">স্টোরের বই</p>
+                        <p class="text-3xl font-extrabold text-white mt-2">{{ storeBooks.length }}</p>
+                    </div>
+                    <div class="silver-glass p-6 rounded-2xl border-l-4 border-amber-400">
+                        <p class="text-silver-400 text-sm">পেন্ডিং অর্ডার</p>
+                        <p class="text-3xl font-extrabold text-white mt-2">{{ storeOrders.length }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="silver-glass p-6 rounded-2xl">
+                        <h3 class="text-lg font-bold text-white mb-2">স্টোর বিক্রির হিসাব</h3>
+                        <p class="text-3xl font-extrabold text-emerald-400">৳ {{ orderRevenue.toFixed(2) }}</p>
+                        <p class="text-xs text-silver-400 mt-2">বর্তমানে জমা হওয়া অর্ডারের মোট মূল্য। পেমেন্ট যাচাই না হওয়া পর্যন্ত এটি নিশ্চিত আয় নয়।</p>
+                    </div>
+                    <div class="silver-glass p-6 rounded-2xl">
+                        <h3 class="text-lg font-bold text-white mb-2">বিজ্ঞাপন নিয়ন্ত্রণ</h3>
+                        <p class="text-sm text-silver-300">চালু বিজ্ঞাপন স্পট: <span class="text-iceblue-400 font-bold">{{ enabledAdSlots }} / 3</span></p>
+                        <p class="text-xs text-silver-400 mt-2">এখানে বাস্তব AdSense আয় দেখানো হচ্ছে না। প্রকৃত আয় জানতে AdSense রিপোর্ট সংযুক্ত করতে হবে।</p>
+                        <button @click="adminTab = 'adsManager'" class="mt-4 px-4 py-2 bg-iceblue-600 hover:bg-iceblue-500 rounded-lg text-xs font-bold text-white">বিজ্ঞাপন সেটিংস খুলুন</button>
+                    </div>
+                </div>
+
+                <div class="silver-glass p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold text-white mb-4">দ্রুত কাজ</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button @click="adminTab = 'addManga'" class="px-4 py-3 bg-iceblue-600 hover:bg-iceblue-500 rounded-xl text-white text-sm font-bold"><i class="fas fa-plus mr-2"></i>মাঙ্গা / চ্যাপ্টার যোগ</button>
+                        <button @click="adminTab = 'manageStore'" class="px-4 py-3 bg-silver-700 hover:bg-silver-600 rounded-xl text-white text-sm font-bold"><i class="fas fa-book mr-2"></i>স্টোরে বই যোগ</button>
+                        <button @click="adminTab = 'orders'" class="px-4 py-3 bg-silver-700 hover:bg-silver-600 rounded-xl text-white text-sm font-bold"><i class="fas fa-receipt mr-2"></i>অর্ডার দেখুন</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tab 1: Add Manga & Chapter -->
+            <div v-if="adminTab === 'addManga'" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Add New Manga -->
+                <div class="silver-glass p-6 rounded-2xl border border-silver-700/50">
+                    <h3 class="text-lg font-bold text-white mb-4 border-b border-silver-700/50 pb-2">১. নতুন মাঙ্গা এন্ট্রি</h3>
+                    <form @submit.prevent="createNewManga" class="space-y-4 text-xs">
+                        <div>
+                            <label class="block text-silver-300 mb-1">ইংরেজি নাম (English Title)</label>
+                            <input v-model="newMangaForm.title" type="text" placeholder="e.g. Solo Leveling" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-silver-300 mb-1">বাংলা নাম (Bengali Title)</label>
+                            <input v-model="newMangaForm.bnTitle" type="text" placeholder="e.g. সোলো লেভেলিং" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-silver-300 mb-1">লেখক (Author)</label>
+                                <input v-model="newMangaForm.author" type="text" placeholder="e.g. Chugong" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-silver-300 mb-1">অনুবাদকের নাম (Bengali Translator)</label>
+                                <input v-model="newMangaForm.translator" type="text" placeholder="e.g. Manga Vault BD Team" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-silver-300 mb-1">IMDb / Rating (e.g. 8.9)</label>
+                                <input v-model="newMangaForm.rating" type="number" step="0.1" placeholder="8.9" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-silver-300 mb-1">জেনার (Genre)</label>
+                                <select v-model="newMangaForm.genre" class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                                    <option>Action</option>
+                                    <option>Fantasy</option>
+                                    <option>Romance</option>
+                                    <option>Sci-Fi</option>
+                                    <option>Supernatural</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-silver-300 mb-1">কাভার ছবির লিংক (Image URL)</label>
+                            <input v-model="newMangaForm.cover" type="text" placeholder="https://..." required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-silver-300 mb-1">গল্পের সারসংক্ষেপ (Synopsis)</label>
+                            <textarea v-model="newMangaForm.synopsis" rows="3" placeholder="মাঙ্গার কাহিনীর বিবরণ লিখুন..." class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-iceblue-600 to-iceblue-500 hover:from-iceblue-500 hover:to-iceblue-400 text-white font-bold py-2.5 rounded-lg transition shadow-lg shadow-iceblue-500/20">
+                            + মাঙ্গা তৈরি করুন
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Add Chapter to Existing Manga -->
+                <div class="silver-glass p-6 rounded-2xl border border-silver-700/50">
+                    <h3 class="text-lg font-bold text-white mb-4 border-b border-silver-700/50 pb-2">২. নতুন চ্যাপ্টার আপডেট করুন</h3>
+                    <form @submit.prevent="createNewChapter" class="space-y-4 text-xs">
+                        <div>
+                            <label class="block text-silver-300 mb-1">মাঙ্গা নির্বাচন করুন</label>
+                            <select v-model="selectedMangaIdForChapter" class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                                <option v-for="manga in mangaList" :key="manga.id" :value="manga.id">
+                                    {{ manga.title }} ({{ manga.bnTitle }})
+                                </option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-silver-300 mb-1">চ্যাপ্টার নম্বর (e.g. Chapter 05)</label>
+                                <input v-model="newChapterForm.chapterNo" type="text" placeholder="Chapter 05" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-silver-300 mb-1">চ্যাপ্টারের নাম (বাংলা)</label>
+                                <input v-model="newChapterForm.chapterTitle" type="text" placeholder="নতুন জাগরণ" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-silver-300 mb-1">পেজের ছবিসমূহ (কমা দিয়ে একাধিক Image URL দিন)</label>
+                            <textarea v-model="newChapterForm.pagesText" rows="4" placeholder="https://image1.jpg, https://image2.jpg" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white focus:border-iceblue-400 outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-silver-700 to-silver-600 hover:from-silver-600 hover:to-silver-500 text-white font-bold py-2.5 rounded-lg transition border border-iceblue-500/30">
+                            + নতুন চ্যাপ্টার পাবলিক করুন
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Admin Tab 2: Store Manager -->
+            <div v-if="adminTab === 'manageStore'" class="silver-glass p-6 rounded-2xl border border-silver-700/50">
+                <h3 class="text-lg font-bold text-white mb-4 border-b border-silver-700/50 pb-2">{{ editingBookId ? 'স্টোরের বই সম্পাদনা করুন' : 'Manga Store - নতুন বই যোগ করুন' }}</h3>
+                <form @submit.prevent="addStoreBook" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-8">
+                    <div>
+                        <label class="block text-silver-300 mb-1">বইয়ের নাম</label>
+                        <input v-model="newBook.title" type="text" placeholder="যেমন: Solo Leveling Vol 1" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-3 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-silver-300 mb-1">দাম (৳ BDT)</label>
+                        <input v-model.number="newBook.price" type="number" min="0" step="1" placeholder="450" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-3 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-silver-300 mb-1">প্রিন্ট কোয়ালিটি / সংস্করণ</label>
+                        <input v-model="newBook.quality" type="text" placeholder="Paperback - Bangla translated" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-3 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-silver-300 mb-1">স্টক (কত কপি আছে)</label>
+                        <input v-model.number="newBook.stock" type="number" min="0" placeholder="20" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-3 text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-silver-300 mb-1">বইয়ের কভার ছবির URL</label>
+                        <input v-model="newBook.image" type="url" placeholder="https://example.com/book-cover.jpg" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-3 text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-silver-300 mb-1">বইয়ের বিবরণ</label>
+                        <textarea v-model="newBook.description" rows="3" placeholder="বইটির কাহিনি, পৃষ্ঠা সংখ্যা, ভাষা ও অন্যান্য তথ্য লিখুন..." class="w-full bg-silver-950 border border-silver-700 rounded-lg p-3 text-white"></textarea>
+                    </div>
+                    <div class="md:col-span-2 flex flex-wrap gap-2">
+                        <button type="submit" class="bg-iceblue-600 hover:bg-iceblue-500 text-white font-bold px-6 py-3 rounded-lg text-xs transition">
+                            <i class="fas fa-save mr-1"></i> {{ editingBookId ? 'পরিবর্তন সংরক্ষণ করুন' : 'স্টোরে নতুন বই যোগ করুন' }}
+                        </button>
+                        <button v-if="editingBookId" type="button" @click="cancelBookEdit" class="bg-silver-700 hover:bg-silver-600 text-white font-bold px-6 py-3 rounded-lg text-xs">বাতিল</button>
+                    </div>
+                </form>
+
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <h4 class="text-sm font-bold text-silver-300">স্টোরে থাকা বইসমূহ ({{ storeBooks.length }})</h4>
+                    <span class="text-xs text-silver-400">স্টকসহ পণ্যের তালিকা</span>
+                </div>
+                <div v-if="storeBooks.length === 0" class="text-center py-8 text-silver-400 text-sm">এখনো কোনো বই যোগ করা হয়নি।</div>
+                <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div v-for="book in storeBooks" :key="book.id" class="bg-silver-900/80 p-4 rounded-xl border border-silver-800 flex flex-col gap-3">
+                        <img :src="book.image" :alt="book.title" class="w-full h-48 object-cover rounded-lg" @error="$event.target.style.display='none'">
+                        <div class="flex-1">
+                            <p class="text-sm font-bold text-white">{{ book.title }}</p>
+                            <p class="text-xs text-iceblue-400 font-bold mt-1">৳ {{ book.price }} BDT</p>
+                            <p class="text-[11px] text-silver-400 mt-1">{{ book.quality }}</p>
+                            <p class="text-[11px] text-silver-300 mt-1">স্টক: {{ book.stock ?? 'উল্লেখ নেই' }}</p>
+                            <p v-if="book.description" class="text-xs text-silver-400 mt-2">{{ book.description }}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button @click="editStoreBook(book)" class="flex-1 px-3 py-2 bg-iceblue-700 hover:bg-iceblue-600 text-white rounded-lg text-xs font-bold"><i class="fas fa-edit mr-1"></i> সম্পাদনা</button>
+                            <button @click="deleteStoreBook(book.id)" class="px-3 py-2 bg-red-900/70 hover:bg-red-800 text-red-200 rounded-lg text-xs font-bold"><i class="fas fa-trash mr-1"></i> মুছুন</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tab 3: Order Requests -->
+            <div v-if="adminTab === 'orders'" class="silver-glass p-6 rounded-2xl border border-silver-700/50">
+                <h3 class="text-lg font-bold text-white mb-4 border-b border-silver-700/50 pb-2">বই ক্রয়ের অর্ডারসমূহ (bKash/Nagad Verified)</h3>
+                <div v-if="storeOrders.length === 0" class="text-center py-8 text-silver-400 text-sm">
+                    কোন নতুন অর্ডার পাওয়া যায়নি।
+                </div>
+                <div v-else class="space-y-3">
+                    <div v-for="order in storeOrders" :key="order.id" class="bg-silver-900/90 border border-silver-700 p-4 rounded-xl flex flex-wrap items-center justify-between gap-4 text-xs">
+                        <div>
+                            <span class="text-iceblue-400 font-bold">Order #{{ order.id }}</span>
+                            <p class="text-white font-bold text-sm">{{ order.customerName }} ({{ order.phone }})</p>
+                            <p class="text-silver-400">ঠিকানা: {{ order.address }}</p>
+                        </div>
+                        <div>
+                            <p class="text-silver-300">বই: <span class="text-white font-semibold">{{ order.bookTitle }}</span></p>
+                            <p class="text-silver-300">মূল্য: <span class="text-white font-semibold">৳ {{ order.price || 0 }}</span></p>
+                            <p class="text-emerald-400 font-bold">পেমেন্ট: {{ order.paymentMethod }} (TrxID: {{ order.trxId }})</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">Pending</span>
+                            <button @click="markOrderDelivered(order.id)" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold">Mark Completed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tab 4: Ad & Income Manager -->
+            <div v-if="adminTab === 'adsManager'" class="silver-glass p-6 rounded-2xl border border-silver-700/50 max-w-2xl">
+                <h3 class="text-lg font-bold text-white mb-4 border-b border-silver-700/50 pb-2">বিজ্ঞাপন ও ইনকাম নিয়ন্ত্রণ (AdSense / Monetization)</h3>
+                <p class="text-xs text-silver-400 mb-6">সাইটে বিজ্ঞাপন চালু বা বন্ধ রাখুন এবং আপনার গুগল এডসেন্স ব্যানার স্পট টেস্ট করুন।</p>
+                <div class="space-y-4 text-sm">
+                    <div class="flex items-center justify-between p-3 bg-silver-900 rounded-xl border border-silver-800">
+                        <div>
+                            <p class="font-bold text-white text-xs">হেডার টপ ব্যানার অ্যাড (Top Banner Ad)</p>
+                            <p class="text-[10px] text-silver-400">ওয়েবসাইটের একদম উপরে বিজ্ঞাপন দেখাবে</p>
+                        </div>
+                        <input type="checkbox" v-model="adsEnabled.topBanner" class="w-5 h-5 accent-iceblue-500 cursor-pointer">
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-silver-900 rounded-xl border border-silver-800">
+                        <div>
+                            <p class="font-bold text-white text-xs">চ্যাপ্টার রিডার ইন-পেজ অ্যাড (In-Chapter Reading Ad)</p>
+                            <p class="text-[10px] text-silver-400">পাঠকরা যখন মাঙ্গার চ্যাপ্টার পড়বে তখন পেজের মাঝে বিজ্ঞাপন আসবে</p>
+                        </div>
+                        <input type="checkbox" v-model="adsEnabled.chapterBanner" class="w-5 h-5 accent-iceblue-500 cursor-pointer">
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-silver-900 rounded-xl border border-silver-800">
+                        <div>
+                            <p class="font-bold text-white text-xs">সাইডবার স্পন্সর ব্যানার (Sidebar Sponsor Block)</p>
+                            <p class="text-[10px] text-silver-400">মাঙ্গা লাইব্রেরি ডিটেইলস এর পাশে দেখাবে</p>
+                        </div>
+                        <input type="checkbox" v-model="adsEnabled.sidebar" class="w-5 h-5 accent-iceblue-500 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- REGULAR USER VIEWS -->
+        <main v-else class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+            <!-- CHAPTER READER VIEW OVERLAY -->
+            <div v-if="selectedChapter" class="space-y-6">
+                <!-- Reader Navigation Top -->
+                <div class="silver-glass p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 sticky top-24 z-30 shadow-2xl border border-iceblue-500/30">
+                    <button @click="selectedChapter = null" class="px-4 py-2 bg-silver-800 hover:bg-silver-700 text-silver-200 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> চ্যাপ্টার তালিকা
+                    </button>
+                    <div class="text-center">
+                        <h2 class="text-sm font-bold text-white">{{ selectedManga.title }} - {{ selectedChapter.chapterNo }}</h2>
+                        <p class="text-xs text-iceblue-400">{{ selectedChapter.chapterTitle }} (অনুবাদ: {{ selectedManga.translator }})</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button @click="prevChapter" :disabled="!hasPrevChapter" class="px-3 py-1.5 bg-silver-800 hover:bg-silver-700 disabled:opacity-40 text-xs rounded-lg font-semibold">আগেরটি</button>
+                        <button @click="nextChapter" :disabled="!hasNextChapter" class="px-3 py-1.5 bg-iceblue-600 hover:bg-iceblue-500 disabled:opacity-40 text-xs text-white rounded-lg font-semibold">পরেরটি</button>
+                    </div>
+                </div>
+
+                <!-- Ad Banner inside Chapter -->
+                <div v-if="adsEnabled.chapterBanner" class="my-4 silver-glass p-4 text-center rounded-xl border border-iceblue-500/20">
+                    <span class="text-[10px] text-silver-400 block mb-1">ADVERTISEMENT</span>
+                    <div class="w-full h-20 bg-gradient-to-r from-silver-900 via-silver-800 to-silver-900 rounded border border-silver-700 flex items-center justify-center text-xs text-iceblue-300 font-bold">
+                        ⚡ Google AdSense / Sponsor Banner Spot (100% Responsive)
+                    </div>
+                </div>
+
+                <!-- Manga Pages Renderer -->
+                <div class="max-w-3xl mx-auto space-y-4 bg-silver-950 p-2 sm:p-4 rounded-2xl border border-silver-800 shadow-2xl">
+                    <div v-for="(imgUrl, pIndex) in selectedChapter.pages" :key="pIndex" class="relative group">
+                        <img :src="imgUrl" :alt="'Page ' + (pIndex + 1)" class="w-full h-auto rounded-lg shadow-md" loading="lazy">
+                        <span class="absolute bottom-2 right-2 bg-black/70 text-silver-300 text-[10px] px-2 py-0.5 rounded backdrop-blur">
+                            {{ pIndex + 1 }} / {{ selectedChapter.pages.length }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Reader Bottom Navigation -->
+                <div class="flex justify-between items-center max-w-3xl mx-auto pt-4">
+                    <button @click="prevChapter" :disabled="!hasPrevChapter" class="px-6 py-2.5 bg-silver-800 hover:bg-silver-700 text-silver-200 rounded-xl text-xs font-bold disabled:opacity-40">
+                        <i class="fas fa-chevron-left mr-1"></i> আগের চ্যাপ্টার
+                    </button>
+                    <button @click="selectedChapter = null" class="text-xs text-iceblue-400 hover:underline">তালিকায় ফিরুন</button>
+                    <button @click="nextChapter" :disabled="!hasNextChapter" class="px-6 py-2.5 bg-iceblue-600 hover:bg-iceblue-500 text-white rounded-xl text-xs font-bold disabled:opacity-40">
+                        পরের চ্যাপ্টার <i class="fas fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MANGA DETAILS PAGE OVERLAY -->
+            <div v-else-if="selectedManga" class="space-y-8 animate-fadeIn">
+                <!-- Back Button -->
+                <button @click="selectedManga = null" class="text-xs text-silver-400 hover:text-white flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i> গ্যালারিতে ফিরে যান
+                </button>
+
+                <!-- Detailed Info Card -->
+                <div class="silver-glass rounded-3xl p-6 sm:p-8 border border-silver-700/40 relative overflow-hidden">
+                    <div class="absolute -top-24 -right-24 w-96 h-96 bg-iceblue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
+                        <!-- Cover Image -->
+                        <div class="md:col-span-1">
+                            <img :src="selectedManga.cover" :alt="selectedManga.title" class="w-full h-80 object-cover rounded-2xl shadow-2xl border border-silver-600/30">
+                            <button @click="toggleBookmark(selectedManga.id)" class="w-full mt-4 py-2.5 rounded-xl border border-iceblue-400/40 text-xs font-bold transition flex items-center justify-center gap-2" :class="isBookmarked(selectedManga.id) ? 'bg-iceblue-500 text-white' : 'bg-silver-800/80 text-silver-200 hover:bg-silver-700'">
+                                <i class="fas fa-bookmark"></i>
+                                {{ isBookmarked(selectedManga.id) ? 'বুকমার্ক করা হয়েছে' : 'বুকমার্কে রাখুন' }}
+                            </button>
+                        </div>
+
+                        <!-- Manga Metadata -->
+                        <div class="md:col-span-3 space-y-4">
+                            <div>
+                                <span class="bg-iceblue-500/20 text-iceblue-300 text-xs font-bold px-3 py-1 rounded-full border border-iceblue-400/30 inline-block mb-2">
+                                    {{ selectedManga.genre }}
+                                </span>
+                                <h1 class="text-3xl font-extrabold text-white tracking-wide">{{ selectedManga.title }}</h1>
+                                <h2 class="text-lg font-bold text-iceblue-400 mt-1">বাংলা নাম: {{ selectedManga.bnTitle }}</h2>
+                            </div>
+
+                            <!-- Rating and Stats Bar -->
+                            <div class="flex flex-wrap items-center gap-6 py-3 border-y border-silver-800 text-xs">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-star text-amber-400 text-base"></i>
+                                    <span class="font-extrabold text-white text-sm">{{ selectedManga.rating }}</span>
+                                    <span class="text-silver-400">/10 (IMDb / User Score)</span>
+                                </div>
+                                <div class="text-silver-300">
+                                    <i class="fas fa-file-alt text-iceblue-400 mr-1"></i> চ্যাপ্টার: <span class="text-white font-bold">{{ selectedManga.chapters.length }}</span>
+                                </div>
+                                <div class="text-silver-300">
+                                    <i class="fas fa-eye text-iceblue-400 mr-1"></i> ভিউ: <span class="text-white font-bold">14.2K</span>
+                                </div>
+                            </div>
+
+                            <!-- Author & Translator Details -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-silver-900/60 p-4 rounded-xl border border-silver-800/80 text-xs">
+                                <div>
+                                    <span class="text-silver-400 block text-[10px] uppercase font-bold tracking-wider">মূল লেখক (Author)</span>
+                                    <span class="text-white font-bold text-sm">{{ selectedManga.author }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-silver-400 block text-[10px] uppercase font-bold tracking-wider">বাংলা অনুবাদক (Bengali Translator)</span>
+                                    <span class="text-iceblue-300 font-bold text-sm">{{ selectedManga.translator }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Story Synopsis -->
+                            <div>
+                                <h3 class="text-xs font-bold text-silver-300 uppercase tracking-wider mb-1">গল্পের সারসংক্ষেপ (Synopsis):</h3>
+                                <p class="text-silver-300 text-xs leading-relaxed">{{ selectedManga.synopsis }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chapter List & Sidebar Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Chapter List (2 Cols) -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fas fa-list-ol text-iceblue-400"></i> চ্যাপ্টার তালিকা (Chapter Releases)
+                        </h3>
+                        <div class="space-y-2">
+                            <div v-for="ch in selectedManga.chapters" :key="ch.id" @click="openChapter(ch)" class="silver-glass p-4 rounded-xl hover:border-iceblue-400/50 cursor-pointer transition flex items-center justify-between group">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-9 h-9 rounded-lg bg-silver-800 text-iceblue-400 font-bold text-xs flex items-center justify-center group-hover:bg-iceblue-500 group-hover:text-white transition">
+                                        <i class="fas fa-book-open"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-white group-hover:text-iceblue-300 transition">{{ ch.chapterNo }} - {{ ch.chapterTitle }}</h4>
+                                        <p class="text-[10px] text-silver-400">আপলোড তারিখ: {{ ch.releaseDate }}</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-silver-800 text-iceblue-300 text-xs font-semibold rounded-lg group-hover:bg-iceblue-600 group-hover:text-white transition">
+                                    পড়ুন <i class="fas fa-chevron-right text-[10px] ml-1"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Sponsor / Ads Block -->
+                    <div class="space-y-6">
+                        <div v-if="adsEnabled.sidebar" class="silver-glass p-5 rounded-2xl border border-iceblue-500/20 text-center">
+                            <span class="text-[10px] text-silver-400 block mb-2">SPONSOR AD</span>
+                            <div class="w-full h-48 bg-gradient-to-b from-silver-950 via-silver-900 to-silver-950 rounded-xl border border-silver-700 p-4 flex flex-col justify-center items-center">
+                                <i class="fas fa-ad text-3xl text-iceblue-400 mb-2"></i>
+                                <p class="text-xs font-bold text-silver-200">এখানে আপনার বিজ্ঞাপন প্রদর্শন করতে পারেন</p>
+                                <p class="text-[10px] text-silver-400 mt-1">যোগাযোগ: ads@mangavault.bd</p>
+                            </div>
+                        </div>
+
+                        <!-- Manga Book Purchase Callout -->
+                        <div class="bg-gradient-to-br from-iceblue-950 to-silver-900 p-5 rounded-2xl border border-iceblue-500/30">
+                            <h4 class="text-sm font-bold text-white mb-2"><i class="fas fa-shopping-cart text-iceblue-400"></i> এই বইটির প্রিন্টেড কপি চান?</h4>
+                            <p class="text-xs text-silver-300 mb-4">Manga Vault BD Store থেকে এখনই প্রি-অর্ডার করুন সম্পূর্ণ বাংলায় অনুবাদিত ফিজিক্যাল পেপারব্যাক বুক!</p>
+                            <button @click="currentTab = 'store'; selectedManga = null" class="w-full py-2 bg-iceblue-500 hover:bg-iceblue-400 text-white font-bold text-xs rounded-lg transition shadow-lg shadow-iceblue-500/20">
+                                স্টোরে ভিজিট করুন
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1: HOME PAGE -->
+            <div v-else-if="currentTab === 'home'" class="space-y-10">
+                
+                <!-- Hero Featured Banner -->
+                <div class="relative rounded-3xl overflow-hidden silver-glass border border-silver-700/50 shadow-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-r from-silver-950 via-silver-950/80 to-transparent z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80" class="w-full h-96 object-cover object-center opacity-40">
+                    <div class="absolute inset-0 z-20 p-6 sm:p-10 flex flex-col justify-center max-w-2xl space-y-4">
+                        <span class="bg-iceblue-500 text-silver-950 text-xs font-extrabold px-3 py-1 rounded-full w-fit">FEATURED RELEASE</span>
+                        <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight">SOLO LEVELING (সোলো লেভেলিং)</h1>
+                        <p class="text-xs sm:text-sm text-silver-300 line-clamp-2">বিশ্বের সবচেয়ে দুর্বল ই-র‍্যাঙ্ক হান্টার সুং জিন-উ এর এক রহস্যময় ডনজনে জীবন-মরণের খেলা এবং চরম শ্যাডো লর্ড হয়ে ওঠার রোমাঞ্চকর গল্প!</p>
+                        <div class="flex items-center space-x-4 pt-2">
+                            <button @click="openManga(mangaList[0])" class="px-6 py-3 bg-gradient-to-r from-iceblue-500 to-iceblue-600 hover:from-iceblue-400 hover:to-iceblue-500 text-white font-extrabold text-xs sm:text-sm rounded-xl transition shadow-xl shadow-iceblue-500/30 flex items-center gap-2">
+                                <i class="fas fa-play"></i> এখন পড়া শুরু করুন
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manga Search & Filter Bar -->
+                <div class="silver-glass p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="relative w-full md:w-96">
+                        <i class="fas fa-search absolute left-3.5 top-3.5 text-silver-400 text-xs"></i>
+                        <input v-model="searchQuery" type="text" placeholder="মাঙ্গার নাম বা অনুবাদক দিয়ে খুঁজুন..." class="w-full bg-silver-950 border border-silver-700/80 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-silver-500 focus:outline-none focus:border-iceblue-400">
+                    </div>
+                    <!-- Genres -->
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                        <button @click="selectedGenre = ''" :class="selectedGenre === '' ? 'bg-iceblue-500 text-white' : 'bg-silver-900 text-silver-400 hover:text-white'" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">সবগুলো</button>
+                        <button v-for="genre in genres" :key="genre" @click="selectedGenre = genre" :class="selectedGenre === genre ? 'bg-iceblue-500 text-white' : 'bg-silver-900 text-silver-400 hover:text-white'" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+                            {{ genre }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Manga Catalog Grid -->
+                <div>
+                    <h2 class="text-xl font-bold text-white mb-6 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fas fa-fire text-iceblue-400"></i> ট্রেন্ডিং মাঙ্গা সিরিজ</span>
+                        <span class="text-xs text-silver-400 font-normal">মোট: {{ filteredManga.length }} টি পাওয়া গেছে</span>
+                    </h2>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                        <div v-for="manga in filteredManga" :key="manga.id" @click="openManga(manga)" class="group silver-glass rounded-2xl overflow-hidden border border-silver-700/40 hover:border-iceblue-400/60 transition cursor-pointer flex flex-col h-full shadow-lg hover:shadow-2xl hover:-translate-y-1">
+                            <div class="relative aspect-[3/4] overflow-hidden">
+                                <img :src="manga.cover" :alt="manga.title" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute top-2 right-2 bg-silver-950/80 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur border border-amber-400/20 flex items-center gap-1">
+                                    <i class="fas fa-star text-[9px]"></i> {{ manga.rating }}
+                                </div>
+                                <div class="absolute bottom-2 left-2 bg-iceblue-950/90 text-iceblue-300 text-[9px] font-bold px-2 py-0.5 rounded border border-iceblue-500/30">
+                                    {{ manga.chapters.length }} Chapters
+                                </div>
+                            </div>
+                            <div class="p-3.5 flex-1 flex flex-col justify-between space-y-2">
+                                <div>
+                                    <h3 class="text-xs font-bold text-white group-hover:text-iceblue-300 transition line-clamp-1">{{ manga.title }}</h3>
+                                    <p class="text-[11px] text-iceblue-400 font-semibold line-clamp-1">{{ manga.bnTitle }}</p>
+                                </div>
+                                <div class="pt-2 border-t border-silver-800/80 flex items-center justify-between text-[10px] text-silver-400">
+                                    <span class="truncate"><i class="fas fa-pen text-silver-500"></i> {{ manga.author }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 2: MANGA LIBRARY -->
+            <div v-else-if="currentTab === 'library'" class="space-y-6">
+                <div class="silver-glass p-6 rounded-2xl">
+                    <h1 class="text-2xl font-bold text-white mb-2">সম্পূর্ণ মাঙ্গা লাইব্রেরি (Catalog)</h1>
+                    <p class="text-xs text-silver-400">আমাদের অনুবাদকদের দ্বারা অনূদিত সকল জনপ্রিয় জাপানিজ ও কোরিয়ান মাঙ্গা/ম্যানহওয়া খুঁজুন।</p>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    <div v-for="manga in mangaList" :key="manga.id" @click="openManga(manga)" class="group silver-glass rounded-2xl overflow-hidden border border-silver-700/40 hover:border-iceblue-400/60 transition cursor-pointer flex flex-col h-full shadow-lg">
+                        <img :src="manga.cover" class="w-full aspect-[3/4] object-cover">
+                        <div class="p-3">
+                            <h3 class="text-xs font-bold text-white truncate">{{ manga.title }}</h3>
+                            <p class="text-[10px] text-iceblue-400 truncate">{{ manga.bnTitle }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: MANGA STORE (বই বিক্রির অপশন) -->
+            <div v-else-if="currentTab === 'store'" class="space-y-8">
+                <!-- Store Header Banner -->
+                <div class="silver-glass p-6 sm:p-8 rounded-3xl border border-iceblue-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <span class="bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-bold px-3 py-1 rounded-full inline-block mb-2">MANGA VAULT BD OFFICIAL STORE</span>
+                        <h1 class="text-3xl font-extrabold text-white">প্রিন্টেড মাঙ্গা বুক সংগ্রহ করুন</h1>
+                        <p class="text-xs text-silver-300 mt-2 max-w-xl">পছন্দের মাঙ্গার ফিজিক্যাল প্রিন্টেড পেপারব্যাক বই ক্যাশ অন ডেলিভারি এবং bKash/Nagad পেমেন্টে অর্ডার করুন সরাসরি বাংলাদেশে!</p>
+                    </div>
+                    <div class="text-center md:text-right bg-silver-900/80 p-4 rounded-2xl border border-silver-700">
+                        <span class="text-xs text-silver-400 block">কাস্টমার সাপোর্ট</span>
+                        <span class="text-sm font-bold text-iceblue-400"><i class="fab fa-whatsapp"></i> +880 1700-000000</span>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div v-for="book in storeBooks" :key="book.id" class="silver-glass rounded-2xl p-4 border border-silver-700/50 flex flex-col justify-between hover:border-iceblue-400/50 transition">
+                        <div class="space-y-3">
+                            <img :src="book.image" :alt="book.title" class="w-full h-56 object-cover rounded-xl">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">{{ book.title }}</h3>
+                                <p class="text-[11px] text-silver-400 mt-1">{{ book.quality }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-silver-800 flex items-center justify-between">
+                            <span class="text-base font-extrabold text-iceblue-400">৳ {{ book.price }} BDT</span>
+                            <button @click="openCheckoutModal(book)" class="px-4 py-2 bg-gradient-to-r from-iceblue-600 to-iceblue-500 hover:from-iceblue-500 hover:to-iceblue-400 text-white font-bold text-xs rounded-lg transition shadow-md shadow-iceblue-500/20">
+                                অর্ডার করুন
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: BOOKMARKS -->
+            <div v-else-if="currentTab === 'bookmarks'" class="space-y-6">
+                <div class="silver-glass p-6 rounded-2xl">
+                    <h1 class="text-2xl font-bold text-white mb-1">আপনার সেভ করা বুকমার্কস</h1>
+                    <p class="text-xs text-silver-400">যে মাঙ্গাগুলো আপনি বুকমার্কে রেখেছেন সেগুলো একনজরে দেখুন।</p>
+                </div>
+
+                <div v-if="bookmarkedMangaList.length === 0" class="text-center py-16 text-silver-400">
+                    <i class="fas fa-bookmark text-4xl mb-3 text-silver-600"></i>
+                    <p class="text-sm">আপনার বুকমার্ক তালিকা বর্তমানে খালি।</p>
+                </div>
+
+                <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                    <div v-for="manga in bookmarkedMangaList" :key="manga.id" @click="openManga(manga)" class="silver-glass rounded-2xl overflow-hidden border border-silver-700/40 cursor-pointer p-3">
+                        <img :src="manga.cover" class="w-full aspect-[3/4] object-cover rounded-xl mb-2">
+                        <h3 class="text-xs font-bold text-white truncate">{{ manga.title }}</h3>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- CHECKOUT MODAL FOR STORE -->
+        <div v-if="checkoutBook" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="silver-glass w-full max-w-md rounded-2xl p-6 border border-iceblue-400/40 space-y-4">
+                <div class="flex items-center justify-between border-b border-silver-700 pb-3">
+                    <h3 class="text-base font-bold text-white">বই কেনার অর্ডার ফর্ম</h3>
+                    <button @click="checkoutBook = null" class="text-silver-400 hover:text-white"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="bg-silver-900 p-3 rounded-xl flex items-center gap-3">
+                    <img :src="checkoutBook.image" class="w-12 h-16 object-cover rounded">
+                    <div>
+                        <h4 class="text-xs font-bold text-white">{{ checkoutBook.title }}</h4>
+                        <p class="text-xs text-iceblue-400 font-bold">মূল্য: ৳ {{ checkoutBook.price }} BDT</p>
+                        <p v-if="checkoutBook.description" class="text-[10px] text-silver-400 mt-1">{{ checkoutBook.description }}</p>
+                    </div>
+                </div>
+
+                <form @submit.prevent="submitOrder" class="space-y-3 text-xs">
+                    <div>
+                        <label class="block text-silver-300 mb-1">আপনার পূর্ণ নাম</label>
+                        <input v-model="orderForm.name" type="text" placeholder="যেমন: তানভীর আহমেদ" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white outline-none focus:border-iceblue-400">
+                    </div>
+                    <div>
+                        <label class="block text-silver-300 mb-1">মোবাইল নম্বর (যোগাযোগের জন্য)</label>
+                        <input v-model="orderForm.phone" type="tel" placeholder="01700000000" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white outline-none focus:border-iceblue-400">
+                    </div>
+                    <div>
+                        <label class="block text-silver-300 mb-1">ডেলিভারি ঠিকানা</label>
+                        <textarea v-model="orderForm.address" rows="2" placeholder="আপনার সম্পূর্ণ ঠিকানা লিখুন..." required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white outline-none focus:border-iceblue-400"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-silver-300 mb-1">পেমেন্ট মাধ্যম সিলেক্ট করুন</label>
+                        <select v-model="orderForm.paymentMethod" class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white outline-none focus:border-iceblue-400">
+                            <option>bKash (Send Money: 01700000000)</option>
+                            <option>Nagad (Send Money: 01700000000)</option>
+                            <option>Cash on Delivery (ডেলিভারির সময় মূল্য দিন)</option>
+                        </select>
+                    </div>
+                    <div v-if="orderForm.paymentMethod !== 'Cash on Delivery (ডেলিভারির সময় মূল্য দিন)'">
+                        <label class="block text-silver-300 mb-1">TrxID (ট্রানজেকশন আইডি)</label>
+                        <input v-model="orderForm.trxId" type="text" placeholder="e.g. 9J28A7XX" class="w-full bg-silver-950 border border-silver-700 rounded-lg p-2.5 text-white outline-none focus:border-iceblue-400">
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-emerald-500/20 text-xs mt-2">
+                        অর্ডার কনফার্ম করুন
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ADMIN LOGIN MODAL -->
+        <div v-if="showAdminLoginModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="silver-glass w-full max-w-sm rounded-2xl p-6 border border-iceblue-400/40 text-center space-y-4">
+                <div class="w-12 h-12 bg-iceblue-500/20 rounded-full flex items-center justify-center mx-auto text-iceblue-400 text-xl border border-iceblue-400/30">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">Admin Security Access</h3>
+                    <p class="text-xs text-silver-400">শুধুমাত্র এডমিন প্যানেলে প্রবেশের জন্য পাসওয়ার্ড দিন</p>
+                </div>
+                <form @submit.prevent="verifyAdminPassword" class="space-y-3 text-xs">
+                    <input v-model="adminPasswordInput" type="password" placeholder="এডমিন পাসওয়ার্ড দিন" required class="w-full bg-silver-950 border border-silver-700 rounded-lg p-3 text-white text-center outline-none focus:border-iceblue-400">
+                    <p v-if="adminLoginError" class="text-red-400 text-[11px]">ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।</p>
+                    <div class="flex gap-2">
+                        <button type="button" @click="showAdminLoginModal = false" class="w-1/2 py-2.5 bg-silver-800 text-silver-300 font-bold rounded-lg">বাতিল</button>
+                        <button type="submit" class="w-1/2 py-2.5 bg-iceblue-600 hover:bg-iceblue-500 text-white font-bold rounded-lg transition">লগইন</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="silver-glass border-t border-silver-800 py-8 mt-12 text-xs text-silver-400">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-iceblue-600 to-silver-400 flex items-center justify-center text-silver-950 font-black">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <span class="font-bold text-white tracking-wider">MANGA VAULT BANGLADESH</span>
+                </div>
+                <p>© 2026 Manga Vault Bangladesh. All manga content translated by local BD translators.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:text-iceblue-400 transition"><i class="fab fa-facebook text-base"></i></a>
+                    <a href="#" class="hover:text-iceblue-400 transition"><i class="fab fa-discord text-base"></i></a>
+                    <a href="#" class="hover:text-iceblue-400 transition"><i class="fab fa-youtube text-base"></i></a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Vue App Script -->
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    currentTab: 'home',
+                    mobileMenuOpen: false,
+                    searchQuery: '',
+                    selectedGenre: '',
+                    selectedManga: null,
+                    selectedChapter: null,
+                    bookmarks: [1],
+                    
+                    // Admin states
+                    isAdminLoggedIn: false,
+                    isAdminViewActive: false,
+                    showAdminLoginModal: false,
+                    adminPasswordInput: '',
+                    adminLoginError: false,
+                    adminTab: 'addManga',
+
+                    // Ad Settings
+                    adsEnabled: {
+                        topBanner: true,
+                        chapterBanner: true,
+                        sidebar: true
+                    },
+
+                    genres: ['Action', 'Fantasy', 'Romance', 'Sci-Fi', 'Supernatural'],
+
+                    // Dummy Manga Catalog Data
+                    mangaList: [
+                        {
+                            id: 1,
+                            title: 'Solo Leveling',
+                            bnTitle: 'সোলো লেভেলিং',
+                            author: 'Chugong (추공)',
+                            translator: 'Manga Vault BD Official',
+                            rating: 8.9,
+                            genre: 'Action',
+                            cover: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&q=80',
+                            synopsis: 'বিশ্বের সর্বনিম্ন E-Rank হান্টার সুং জিন-উ হঠাৎ করে এক ভয়ংকর ডনজনে এক বিশেষ সিস্টেম লাভ করে। যা তাকে ক্রমাগত শক্তি বাড়িয়ে পৃথিবীর সবচেয়ে শক্তিশালী শ্যাডো লর্ড-এ পরিণত করে।',
+                            chapters: [
+                                {
+                                    id: 101,
+                                    chapterNo: 'Chapter 01',
+                                    chapterTitle: 'সবচেয়ে দুর্বল হান্টার',
+                                    releaseDate: '01 Nov 2026',
+                                    pages: [
+                                        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80',
+                                        'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&q=80'
+                                    ]
+                                },
+                                {
+                                    id: 102,
+                                    chapterNo: 'Chapter 02',
+                                    chapterTitle: 'ডাবল ডনজনের রহস্য',
+                                    releaseDate: '05 Nov 2026',
+                                    pages: [
+                                        'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&q=80'
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: 2,
+                            title: 'Jujutsu Kaisen',
+                            bnTitle: 'জুজুৎসু কায়সেন',
+                            author: 'Gege Akutami',
+                            translator: 'Anime BD Translators',
+                            rating: 8.6,
+                            genre: 'Supernatural',
+                            cover: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500&q=80',
+                            synopsis: 'ইউজি ইতাদোরি নামের এক হাইস্কুল ছাত্র এক অভিশপ্ত বস্তুর তিলক গ্রাস করে রিয়োমেন সুকুনার অভিশাপ নিজের শরীরে ধারণ করে। অভিশাপমুক্ত পৃথিবীর জন্য শুরু হয় যুদ্ধ।',
+                            chapters: [
+                                {
+                                    id: 201,
+                                    chapterNo: 'Chapter 01',
+                                    chapterTitle: 'রিয়োমেন সুকুনা',
+                                    releaseDate: '03 Nov 2026',
+                                    pages: [
+                                        'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&q=80'
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: 3,
+                            title: 'Chainsaw Man',
+                            bnTitle: 'চেইনস ম্যান',
+                            author: 'Tatsuki Fujimoto',
+                            translator: 'Nibir & Team',
+                            rating: 8.7,
+                            genre: 'Action',
+                            cover: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&q=80',
+                            synopsis: 'ডেনজি নামের এক দরিদ্র ছেলে নিজের ডেভিল পচিতার সাথে চুক্তির মাধ্যমে চেইনস ডেভিলে রূপান্তরিত হয় এবং পাবলিক সেফটি হান্টার্সে যোগ দেয়।',
+                            chapters: [
+                                {
+                                    id: 301,
+                                    chapterNo: 'Chapter 01',
+                                    chapterTitle: 'কুকুর এবং শয়তান',
+                                    releaseDate: '07 Nov 2026',
+                                    pages: [
+                                        'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&q=80'
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+
+                    // Store Items
+                    storeBooks: [
+                        {
+                            id: 1,
+                            title: 'Solo Leveling Vol. 01 (Bangla Edition)',
+                            price: 450,
+                            quality: '80 GSM Premium Paper (Paperback)',
+                            image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&q=80'
+                        },
+                        {
+                            id: 2,
+                            title: 'Jujutsu Kaisen Vol. 01',
+                            price: 390,
+                            quality: 'Imported HQ Print',
+                            image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&q=80'
+                        }
+                    ],
+
+                    // Admin forms & temporary storage
+                    newMangaForm: {
+                        title: '',
+                        bnTitle: '',
+                        author: '',
+                        translator: '',
+                        rating: 8.5,
+                        genre: 'Action',
+                        cover: '',
+                        synopsis: ''
+                    },
+                    selectedMangaIdForChapter: 1,
+                    newChapterForm: {
+                        chapterNo: '',
+                        chapterTitle: '',
+                        pagesText: ''
+                    },
+                    newBook: {
+                        title: '',
+                        price: '',
+                        quality: '',
+                        image: '',
+                        description: '',
+                        stock: 0
+                    },
+                    editingBookId: null,
+
+                    // Orders
+                    storeOrders: [],
+                    checkoutBook: null,
+                    orderForm: {
+                        name: '',
+                        phone: '',
+                        address: '',
+                        paymentMethod: 'bKash (Send Money: 01700000000)',
+                        trxId: ''
+                    }
+                }
+            },
+            computed: {
+                filteredManga() {
+                    return this.mangaList.filter(manga => {
+                        const matchesSearch = manga.title.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
+                                              manga.bnTitle.includes(this.searchQuery);
+                        const matchesGenre = this.selectedGenre === '' || manga.genre === this.selectedGenre;
+                        return matchesSearch && matchesGenre;
+                    });
+                },
+                bookmarkedMangaList() {
+                    return this.mangaList.filter(m => this.bookmarks.includes(m.id));
+                },
+                totalChapters() {
+                    return this.mangaList.reduce((sum, manga) => sum + (manga.chapters ? manga.chapters.length : 0), 0);
+                },
+                enabledAdSlots() {
+                    return Object.values(this.adsEnabled).filter(Boolean).length;
+                },
+                orderRevenue() {
+                    return this.storeOrders.reduce((sum, order) => sum + (Number(order.price) || 0), 0);
+                },
+                hasPrevChapter() {
+                    if (!this.selectedManga || !this.selectedChapter) return false;
+                    const idx = this.selectedManga.chapters.findIndex(c => c.id === this.selectedChapter.id);
+                    return idx > 0;
+                },
+                hasNextChapter() {
+                    if (!this.selectedManga || !this.selectedChapter) return false;
+                    const idx = this.selectedManga.chapters.findIndex(c => c.id === this.selectedChapter.id);
+                    return idx < this.selectedManga.chapters.length - 1;
+                }
+            },
+            mounted() {
+                try {
+                    const saved = JSON.parse(localStorage.getItem('mvb_admin_data') || '{}');
+                    if (Array.isArray(saved.mangaList)) this.mangaList = saved.mangaList;
+                    if (Array.isArray(saved.storeBooks)) this.storeBooks = saved.storeBooks;
+                    if (Array.isArray(saved.storeOrders)) this.storeOrders = saved.storeOrders;
+                    if (saved.adsEnabled && typeof saved.adsEnabled === 'object') this.adsEnabled = { ...this.adsEnabled, ...saved.adsEnabled };
+                } catch (error) {
+                    console.warn('Saved site data could not be loaded.', error);
+                }
+            },
+            watch: {
+                mangaList: { deep: true, handler() { this.saveSiteData(); } },
+                storeBooks: { deep: true, handler() { this.saveSiteData(); } },
+                storeOrders: { deep: true, handler() { this.saveSiteData(); } },
+                adsEnabled: { deep: true, handler() { this.saveSiteData(); } }
+            },
+            methods: {
+                saveSiteData() {
+                    try {
+                        localStorage.setItem('mvb_admin_data', JSON.stringify({
+                            mangaList: this.mangaList,
+                            storeBooks: this.storeBooks,
+                            storeOrders: this.storeOrders,
+                            adsEnabled: this.adsEnabled
+                        }));
+                    } catch (error) {
+                        console.warn('Site data could not be saved in this browser.', error);
+                    }
+                },
+                openManga(manga) {
+                    this.selectedManga = manga;
+                    this.selectedChapter = null;
+                },
+                openChapter(ch) {
+                    this.selectedChapter = ch;
+                },
+                prevChapter() {
+                    const idx = this.selectedManga.chapters.findIndex(c => c.id === this.selectedChapter.id);
+                    if (idx > 0) {
+                        this.selectedChapter = this.selectedManga.chapters[idx - 1];
+                    }
+                },
+                nextChapter() {
+                    const idx = this.selectedManga.chapters.findIndex(c => c.id === this.selectedChapter.id);
+                    if (idx < this.selectedManga.chapters.length - 1) {
+                        this.selectedChapter = this.selectedManga.chapters[idx + 1];
+                    }
+                },
+                toggleBookmark(mangaId) {
+                    if (this.isBookmarked(mangaId)) {
+                        this.bookmarks = this.bookmarks.filter(id => id !== mangaId);
+                    } else {
+                        this.bookmarks.push(mangaId);
+                    }
+                },
+                isBookmarked(mangaId) {
+                    return this.bookmarks.includes(mangaId);
+                },
+
+                // Admin Security Toggle
+                toggleAdminView() {
+                    if (this.isAdminLoggedIn) {
+                        this.isAdminViewActive = !this.isAdminViewActive;
+                    } else {
+                        this.showAdminLoginModal = true;
+                    }
+                },
+                verifyAdminPassword() {
+                    // Admin password configured by site owner
+                    if (this.adminPasswordInput === 'M@h@dih@ss@nt@nveer832005') {
+                        this.isAdminLoggedIn = true;
+                        this.isAdminViewActive = true;
+                        this.showAdminLoginModal = false;
+                        this.adminPasswordInput = '';
+                        this.adminLoginError = false;
+                    } else {
+                        this.adminLoginError = true;
+                    }
+                },
+
+                // Admin Functions
+                createNewManga() {
+                    const newId = Date.now();
+                    this.mangaList.push({
+                        id: newId,
+                        ...this.newMangaForm,
+                        chapters: []
+                    });
+                    alert('মাঙ্গা সাফল্যের সাথে তৈরি হয়েছে!');
+                    this.newMangaForm = { title: '', bnTitle: '', author: '', translator: '', rating: 8.5, genre: 'Action', cover: '', synopsis: '' };
+                },
+                createNewChapter() {
+                    const targetManga = this.mangaList.find(m => m.id === this.selectedMangaIdForChapter);
+                    if (targetManga) {
+                        const pagesArray = this.newChapterForm.pagesText.split(',').map(url => url.trim());
+                        targetManga.chapters.push({
+                            id: Date.now(),
+                            chapterNo: this.newChapterForm.chapterNo,
+                            chapterTitle: this.newChapterForm.chapterTitle,
+                            releaseDate: 'আজকে প্রকাশিত',
+                            pages: pagesArray
+                        });
+                        alert('নতুন চ্যাপ্টার লাইভ করা হয়েছে!');
+                        this.newChapterForm = { chapterNo: '', chapterTitle: '', pagesText: '' };
+                    }
+                },
+                addStoreBook() {
+                    const bookData = {
+                        ...this.newBook,
+                        price: Number(this.newBook.price) || 0,
+                        stock: Number(this.newBook.stock) || 0
+                    };
+                    if (this.editingBookId) {
+                        const index = this.storeBooks.findIndex(book => book.id === this.editingBookId);
+                        if (index !== -1) this.storeBooks.splice(index, 1, { ...this.storeBooks[index], ...bookData });
+                        alert('বইয়ের তথ্য আপডেট করা হয়েছে!');
+                    } else {
+                        this.storeBooks.push({ id: Date.now(), ...bookData });
+                        alert('নতুন বই স্টোরে যুক্ত হয়েছে!');
+                    }
+                    this.cancelBookEdit();
+                },
+                editStoreBook(book) {
+                    this.editingBookId = book.id;
+                    this.newBook = {
+                        title: book.title || '',
+                        price: book.price || 0,
+                        quality: book.quality || '',
+                        image: book.image || '',
+                        description: book.description || '',
+                        stock: book.stock ?? 0
+                    };
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+                deleteStoreBook(bookId) {
+                    if (!confirm('এই বইটি স্টোর থেকে মুছে ফেলতে চান?')) return;
+                    this.storeBooks = this.storeBooks.filter(book => book.id !== bookId);
+                    if (this.editingBookId === bookId) this.cancelBookEdit();
+                },
+                cancelBookEdit() {
+                    this.editingBookId = null;
+                    this.newBook = { title: '', price: '', quality: '', image: '', description: '', stock: 0 };
+                },
+
+                // Store Checkout
+                openCheckoutModal(book) {
+                    this.checkoutBook = book;
+                },
+                submitOrder() {
+                    this.storeOrders.push({
+                        id: Math.floor(1000 + Math.random() * 9000),
+                        bookTitle: this.checkoutBook.title,
+                        price: Number(this.checkoutBook.price) || 0,
+                        customerName: this.orderForm.name,
+                        phone: this.orderForm.phone,
+                        address: this.orderForm.address,
+                        paymentMethod: this.orderForm.paymentMethod,
+                        trxId: this.orderForm.trxId || 'N/A'
+                    });
+                    alert('ধন্যবাদ! আপনার বইয়ের অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে। এডমিন প্যানেলে এটি জমা হয়েছে।');
+                    this.checkoutBook = null;
+                    this.orderForm = { name: '', phone: '', address: '', paymentMethod: 'bKash (Send Money: 01700000000)', trxId: '' };
+                },
+                markOrderDelivered(orderId) {
+                    this.storeOrders = this.storeOrders.filter(o => o.id !== orderId);
+                    alert('অর্ডার ডেলিভারি হিসেবে মার্ক করা হয়েছে!');
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
